@@ -26,6 +26,9 @@
 @end
 
 @implementation IASKSpecifierValuesViewController
+{
+    NSIndexPath* _previouslyCheckedItem;
+}
 
 @synthesize tableView=_tableView;
 @synthesize currentSpecifier=_currentSpecifier;
@@ -168,7 +171,8 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	
+    _previouslyCheckedItem = [self checkedItem];
+    
     if (indexPath == [self checkedItem]) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
         return;
@@ -189,8 +193,15 @@
                                                                                            forKey:[_currentSpecifier key]]];
 }
 
-- (CGSize)contentSizeForViewInPopover {
-    return [[self view] sizeThatFits:CGSizeMake(320, 2000)];
+- (void)resetCheckedItem
+{
+    if(_previouslyCheckedItem)
+    {
+        [self deselectCell:[_tableView cellForRowAtIndexPath:[self checkedItem]]];
+        [self selectCell:[_tableView cellForRowAtIndexPath:_previouslyCheckedItem]];
+        [self setCheckedItem:_previouslyCheckedItem];
+        _previouslyCheckedItem = nil;
+    }
 }
 
 

@@ -33,4 +33,5 @@
 @property (nonatomic, retain) NSIndexPath *checkedItem;
 @property (nonatomic, retain) IASKSpecifier *currentSpecifier;
 
+- (void)resetCheckedItem;
 @end
