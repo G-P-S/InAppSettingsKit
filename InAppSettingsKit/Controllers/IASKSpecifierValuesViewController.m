@@ -120,6 +120,10 @@
 	[_settingsReader release], _settingsReader = nil;
     [_settingsStore release], _settingsStore = nil;
 	[_tableView release], _tableView = nil;
+    
+    [_previouslyCheckedItem release];
+    _previouslyCheckedItem = nil;
+    
     [super dealloc];
 }
 
@@ -171,7 +175,6 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    _previouslyCheckedItem = [self checkedItem];
     
     if (indexPath == [self checkedItem]) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -183,7 +186,10 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self deselectCell:[tableView cellForRowAtIndexPath:[self checkedItem]]];
     [self selectCell:[tableView cellForRowAtIndexPath:indexPath]];
-    [self setCheckedItem:indexPath];
+    
+    // persist current selection for later use before updating the checked item
+    [self setPreviouslyCheckedItem:[self checkedItem]];   
+    [self setCheckedItem:indexPath];  
 	
     [self.settingsStore setObject:[values objectAtIndex:indexPath.row] forKey:[_currentSpecifier key]];
 	[self.settingsStore synchronize];
@@ -196,14 +202,24 @@
 - (void)resetCheckedItem
 {
     if(_previouslyCheckedItem)
-    {
+    {        
         [self deselectCell:[_tableView cellForRowAtIndexPath:[self checkedItem]]];
-        [self selectCell:[_tableView cellForRowAtIndexPath:_previouslyCheckedItem]];
-        [self setCheckedItem:_previouslyCheckedItem];
-        _previouslyCheckedItem = nil;
+        [self selectCell:[_tableView cellForRowAtIndexPath:[self previouslyCheckedItem]]];
+        [self setCheckedItem:[self previouslyCheckedItem]];
     }
 }
 
+- (void) setPreviouslyCheckedItem:(NSIndexPath*)indexPath
+{
+    [indexPath retain];
+    [_previouslyCheckedItem release];
+    _previouslyCheckedItem = indexPath;
+}
+
+- (NSIndexPath*)previouslyCheckedItem
+{
+    return _previouslyCheckedItem;
+}
 
 #pragma mark Notifications
 
