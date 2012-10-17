@@ -239,7 +239,8 @@ hiddenKeys = _hiddenKeys;
 	// Settings.bundle/FILE.inApp.plist
 	// Settings.bundle/FILE~DEVICE.plist
 	// Settings.bundle/FILE.plist
-	//
+	// tmp/FILE.plist
+    //
 	// where DEVICE is either "iphone" or "ipad" depending on the current
 	// interface idiom.
 	//
@@ -266,6 +267,8 @@ hiddenKeys = _hiddenKeys;
 	NSString *path = nil;
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	
+    BOOL fileFoundInBundle = NO;
+    
 	for (NSString *bundle in bundles) {
 		for (NSString *extension in extensions) {
 			for (NSString *suffix in suffixes) {
@@ -275,6 +278,7 @@ hiddenKeys = _hiddenKeys;
 							   suffix:suffix
 							extension:extension];
 					if ([fileManager fileExistsAtPath:path]) {
+                        fileFoundInBundle = YES;
 						goto exitFromNestedLoop;
 					}
 				}
@@ -283,6 +287,11 @@ hiddenKeys = _hiddenKeys;
 	}
 	
 exitFromNestedLoop:
+    if(!fileFoundInBundle)
+    {
+        // try the application temporary directory as last resource
+        path = [NSTemporaryDirectory() stringByAppendingPathComponent:[file stringByAppendingPathExtension:@"plist"]];
+    }
 	return path;
 }
 
