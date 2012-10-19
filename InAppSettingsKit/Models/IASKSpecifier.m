@@ -27,15 +27,11 @@
 @synthesize specifierDict=_specifierDict;
 @synthesize multipleValuesDict=_multipleValuesDict;
 @synthesize settingsReader = _settingsReader;
+@synthesize hiddenTitles = _hiddenTitles;
 
 - (id)initWithSpecifier:(NSDictionary*)specifier {
     if ((self = [super init])) {
         [self setSpecifierDict:specifier];
-        
-        if ([[self type] isEqualToString:kIASKPSMultiValueSpecifier] ||
-			[[self type] isEqualToString:kIASKPSTitleValueSpecifier]) {
-            [self _reinterpretValues:[self specifierDict]];
-        }
     }
     return self;
 }
@@ -43,23 +39,53 @@
 - (void)dealloc {
     [_specifierDict release], _specifierDict = nil;
     [_multipleValuesDict release], _multipleValuesDict = nil;
+    [_hiddenTitles release], _hiddenTitles = nil;
 	
 	_settingsReader = nil;
 
     [super dealloc];
 }
 
+- (void)interpretValues
+{
+    if ([[self type] isEqualToString:kIASKPSMultiValueSpecifier] ||
+        [[self type] isEqualToString:kIASKPSTitleValueSpecifier]) {
+        [self _reinterpretValues:[self specifierDict]];
+    }
+}
+
 - (void)_reinterpretValues:(NSDictionary*)specifierDict {
-    NSArray *values = [_specifierDict objectForKey:kIASKValues];
-    NSArray *titles = [_specifierDict objectForKey:kIASKTitles];
+    NSMutableArray *values = [NSMutableArray arrayWithCapacity:[[_specifierDict objectForKey:kIASKValues] count]];
+    NSMutableArray *titles = [NSMutableArray arrayWithCapacity:[[_specifierDict objectForKey:kIASKTitles] count]];
+    
+    [values setArray:[_specifierDict objectForKey:kIASKValues]];
+    [titles setArray:[_specifierDict objectForKey:kIASKTitles]];
+    
+    NSString* key = [_specifierDict objectForKey:kIASKKey];
+    if([_hiddenTitles valueForKey:key])
+    {
+        NSArray* allTitles = [_specifierDict objectForKey:kIASKTitles];
+        NSArray* allValues = [_specifierDict objectForKey:kIASKValues];
+        
+        id hiddenTitles = [_hiddenTitles valueForKey:key];
+
+        for(int index = 0; index < [allTitles count]; ++index)
+        {
+            if([hiddenTitles containsObject:[allTitles objectAtIndex:index]])
+            {
+                [titles removeObject:[allTitles objectAtIndex:index]];
+                [values removeObject:[allValues objectAtIndex:index]];
+            }
+        }
+    }
     
     NSMutableDictionary *multipleValuesDict = [[[NSMutableDictionary alloc] init] autorelease];
     
-    if (values) {
+    if (values && [values count] != 0) {
 		[multipleValuesDict setObject:values forKey:kIASKValues];
 	}
 	
-    if (titles) {
+    if (titles && [titles count] != 0) {
 		[multipleValuesDict setObject:titles forKey:kIASKTitles];
 	}
     

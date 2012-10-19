@@ -61,6 +61,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 @synthesize showDoneButton = _showDoneButton;
 @synthesize settingsStore = _settingsStore;
 @synthesize hiddenKeys = _hiddenKeys;
+@synthesize hiddenTitles = _hiddenTitles;
 
 #pragma mark accessors
 - (IASKSettingsReader*)settingsReader {
@@ -322,6 +323,62 @@ CGRect IASKCGRectSwap(CGRect rect);
 	}
 }
 
+- (void)setHiddenKeys:(NSSet*)theHiddenKeys reloadData:(BOOL)reload
+{
+    if (_hiddenKeys != theHiddenKeys)
+    {
+        NSSet *oldHiddenKeys = _hiddenKeys;
+        _hiddenKeys = [theHiddenKeys retain];
+        [oldHiddenKeys release];
+        
+        self.settingsReader.hiddenKeys = _hiddenKeys;
+        
+        if(reload) {
+            [self reloadData];
+        }
+    }
+    
+	IASKAppSettingsViewController *childViewController = [[self.viewList objectAtIndex:kIASKSpecifierChildViewControllerIndex] objectForKey:@"viewController"];
+	if(childViewController) {
+		[childViewController setHiddenKeys:theHiddenKeys reloadData:reload];
+	}
+}
+
+- (void)setHiddenTitles:(NSDictionary *)theHiddenTitles {
+	[self setHiddenTitles:theHiddenTitles reloadData:NO];
+}
+
+- (void)setHiddenTitles:(NSDictionary*)theHiddenTitles reloadData:(BOOL)reload
+{   
+    if (_hiddenTitles != theHiddenTitles)
+    {
+        NSDictionary *oldHiddenTitles = _hiddenTitles;
+        _hiddenTitles = [theHiddenTitles retain];
+        [oldHiddenTitles release];
+        
+        self.settingsReader.hiddenTitles = _hiddenTitles;
+        
+        if(reload) {
+            [self reloadData];
+        }
+    }
+    
+	IASKAppSettingsViewController *childViewController = [[self.viewList objectAtIndex:kIASKSpecifierChildViewControllerIndex] objectForKey:@"viewController"];
+	if(childViewController) {
+		[childViewController setHiddenTitles:theHiddenTitles reloadData:reload];
+	}
+}
+
+- (void)reloadData
+{
+    [self.settingsReader load];
+    [self.tableView reloadData];
+    
+    IASKAppSettingsViewController *childViewController = [[self.viewList objectAtIndex:kIASKSpecifierChildViewControllerIndex] objectForKey:@"viewController"];
+    if(childViewController) {
+        return [childViewController reloadData];
+    }
+}
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -332,6 +389,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 	[_settingsReader release], _settingsReader = nil;
     [_settingsStore release], _settingsStore = nil;
     [_hiddenKeys release], _hiddenKeys = nil;
+    [_hiddenTitles release], _hiddenTitles = nil;
 	
 	_delegate = nil;
 

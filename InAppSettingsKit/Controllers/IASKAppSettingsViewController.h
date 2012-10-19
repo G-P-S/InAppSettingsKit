@@ -74,6 +74,7 @@
     BOOL                    _showDoneButton;
 	
     NSSet                   *_hiddenKeys;
+    NSDictionary            *_hiddenTitles;
 }
 
 @property (nonatomic, assign) IBOutlet id delegate;
@@ -81,8 +82,16 @@
 @property (nonatomic, assign) BOOL showCreditsFooter;
 @property (nonatomic, assign) BOOL showDoneButton;
 @property (nonatomic, retain) NSSet *hiddenKeys;
+@property (nonatomic, retain) NSDictionary *hiddenTitles;
 
 - (void)synchronizeSettings;
 - (void)dismiss:(id)sender;
+
 - (void)setHiddenKeys:(NSSet*)hiddenKeys animated:(BOOL)animated;
+- (void)setHiddenKeys:(NSSet*)hiddenKeys reloadData:(BOOL)reload;
+
+- (void)setHiddenTitles:(NSDictionary*)hiddenTitles reloadData:(BOOL)reload;
+
+- (void)reloadData;
+
 @end
