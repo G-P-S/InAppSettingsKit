@@ -23,14 +23,11 @@
     NSDictionary    *_specifierDict;
     NSDictionary    *_multipleValuesDict;
 	IASKSettingsReader *_settingsReader;
-    NSDictionary *_hiddenTitles;
 }
 @property (nonatomic, retain) NSDictionary  *specifierDict;
 @property (nonatomic, assign) IASKSettingsReader *settingsReader;
-@property (nonatomic, retain) NSDictionary *hiddenTitles;
 
 - (id)initWithSpecifier:(NSDictionary*)specifier;
-- (void)interpretValues;
 - (NSString*)localizedObjectForKey:(NSString*)key;
 - (NSString*)title;
 - (NSString*)key;

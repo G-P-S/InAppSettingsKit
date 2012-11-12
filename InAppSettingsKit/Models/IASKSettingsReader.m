@@ -32,8 +32,7 @@ localizationTable=_localizationTable,
 bundlePath=_bundlePath,
 settingsBundle=_settingsBundle, 
 dataSource=_dataSource,
-hiddenKeys = _hiddenKeys,
-hiddenTitles = _hiddenTitles;
+hiddenKeys = _hiddenKeys;
 
 - (id)init {
 	return [self initWithFile:@"Root"];
@@ -70,13 +69,6 @@ hiddenTitles = _hiddenTitles;
 	return self;
 }
 
-- (void)load
-{
-    if (_settingsBundle) {
-        [self _reinterpretBundle:_settingsBundle];
-    }
-}
-
 - (void)dealloc {
 	[_path release], _path = nil;
 	[_localizationTable release], _localizationTable = nil;
@@ -85,26 +77,23 @@ hiddenTitles = _hiddenTitles;
 	[_dataSource release], _dataSource = nil;
 	[_bundle release], _bundle = nil;
     [_hiddenKeys release], _hiddenKeys = nil;
-    [_hiddenTitles release], _hiddenTitles = nil;
-    
+
 	[super dealloc];
 }
+
 
 - (void)setHiddenKeys:(NSSet *)anHiddenKeys {
 	if (_hiddenKeys != anHiddenKeys) {
 		id old = _hiddenKeys;
 		_hiddenKeys = [anHiddenKeys retain];
 		[old release];
+		
+		if (_settingsBundle) {
+			[self _reinterpretBundle:_settingsBundle];
+		}
 	}
 }
 
-- (void)setHiddenTitles:(NSDictionary *)anHiddenTitles {
-	if (_hiddenTitles != anHiddenTitles) {
-		id old = _hiddenTitles;
-		_hiddenTitles = [anHiddenTitles retain];
-		[old release];
-	}
-}
 
 - (void)_reinterpretBundle:(NSDictionary*)settingsBundle {
 	NSArray *preferenceSpecifiers	= [settingsBundle objectForKey:kIASKPreferenceSpecifiers];
@@ -132,9 +121,6 @@ hiddenTitles = _hiddenTitles;
 			}
 
 			IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:specifier];
-            [newSpecifier setHiddenTitles:self.hiddenTitles];
-            [newSpecifier interpretValues];
-            
 			[(NSMutableArray*)[dataSource objectAtIndex:sectionCount] addObject:newSpecifier];
 			[newSpecifier release];
 		}
