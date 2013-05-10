@@ -653,7 +653,12 @@ CGRect IASKCGRectSwap(CGRect rect);
         [targetViewController setCurrentSpecifier:specifier];
         targetViewController.settingsReader = self.settingsReader;
         targetViewController.settingsStore = self.settingsStore;
-        [[self navigationController] pushViewController:targetViewController animated:YES];
+
+        //  in old devices with slow animation, it could happen to push the same view controller multiple times. This prevents to crash!
+        if (![[self navigationController].topViewController isKindOfClass:[IASKSpecifierValuesViewController class]])
+        {
+            [[self navigationController] pushViewController:targetViewController animated:YES];
+        }
     }
     else if ([[specifier type] isEqualToString:kIASKPSTextFieldSpecifier]) {
 		IASKPSTextFieldSpecifierViewCell *textFieldCell = (id)[tableView cellForRowAtIndexPath:indexPath];
