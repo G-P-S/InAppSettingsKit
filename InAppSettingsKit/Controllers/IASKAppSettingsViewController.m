@@ -90,8 +90,9 @@ CGRect IASKCGRectSwap(CGRect rect);
 		[_file release];
 		_file = [file copy];
 	}
-	
-    self.tableView.contentOffset = CGPointMake(0, 0);
+
+// Prevent reloading from scrolling back to the top
+//    self.tableView.contentOffset = CGPointMake(0, 0);
 	self.settingsReader = nil; // automatically initializes itself
 	[_hiddenKeys release], _hiddenKeys = nil;
 	[self.tableView reloadData];
