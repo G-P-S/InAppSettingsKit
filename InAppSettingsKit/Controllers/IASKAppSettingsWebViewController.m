@@ -50,15 +50,6 @@
 	[webView loadRequest:[NSURLRequest requestWithURL:self.url]];
 }
 
-- (void)viewDidUnload {
-	[super viewDidUnload];
-	self.webView = nil;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
-
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
 	self.navigationItem.title = [self.webView stringByEvaluatingJavaScriptFromString:@"document.title"];
 }
