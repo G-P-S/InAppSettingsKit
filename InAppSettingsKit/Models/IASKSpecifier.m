@@ -18,15 +18,12 @@
 #import "IASKSettingsReader.h"
 
 @interface IASKSpecifier ()
+
 @property (nonatomic, retain) NSDictionary  *multipleValuesDict;
-- (void)_reinterpretValues:(NSDictionary*)specifierDict;
+
 @end
 
 @implementation IASKSpecifier
-
-@synthesize specifierDict=_specifierDict;
-@synthesize multipleValuesDict=_multipleValuesDict;
-@synthesize settingsReader = _settingsReader;
 
 - (id)initWithSpecifier:(NSDictionary*)specifier {
     if ((self = [super init])) {
@@ -40,20 +37,11 @@
     return self;
 }
 
-- (void)dealloc {
-    [_specifierDict release], _specifierDict = nil;
-    [_multipleValuesDict release], _multipleValuesDict = nil;
-	
-	_settingsReader = nil;
-
-    [super dealloc];
-}
-
 - (void)_reinterpretValues:(NSDictionary*)specifierDict {
     NSArray *values = [_specifierDict objectForKey:kIASKValues];
     NSArray *titles = [_specifierDict objectForKey:kIASKTitles];
     
-    NSMutableDictionary *multipleValuesDict = [[[NSMutableDictionary alloc] init] autorelease];
+    NSMutableDictionary *multipleValuesDict = [NSMutableDictionary new];
     
     if (values) {
 		[multipleValuesDict setObject:values forKey:kIASKValues];
@@ -191,6 +179,15 @@
     else if ([[_specifierDict objectForKey:KIASKKeyboardType] isEqualToString:kIASKKeyboardNumberPad]) {
         return UIKeyboardTypeNumberPad;
     }
+    else if ([[_specifierDict objectForKey:KIASKKeyboardType] isEqualToString:kIASKKeyboardPhonePad]) {
+        return UIKeyboardTypePhonePad;
+    }
+    else if ([[_specifierDict objectForKey:KIASKKeyboardType] isEqualToString:kIASKKeyboardNamePhonePad]) {
+        return UIKeyboardTypeNamePhonePad;
+    }
+    else if ([[_specifierDict objectForKey:KIASKKeyboardType] isEqualToString:kIASKKeyboardASCIICapable]) {
+        return UIKeyboardTypeASCIICapable;
+    }
     else if ([[_specifierDict objectForKey:KIASKKeyboardType] isEqualToString:kIASKKeyboardDecimalPad]) {
 		if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iPhoneOS_4_1) {
 			return UIKeyboardTypeDecimalPad;
@@ -252,20 +249,20 @@
 	return !boxedResult || [boxedResult boolValue];
 }
 
-- (UITextAlignment)textAlignment
+- (NSTextAlignment)textAlignment
 {
     if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentLeft]) {
-        return UITextAlignmentLeft;
+        return NSTextAlignmentLeft;
     } else if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentCenter]) {
-        return UITextAlignmentCenter;
+        return NSTextAlignmentCenter;
     } else if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentRight]) {
-        return UITextAlignmentRight;
+        return NSTextAlignmentRight;
     }
     if ([self.type isEqualToString:kIASKButtonSpecifier] && !self.cellImage) {
-		return UITextAlignmentCenter;
+		return NSTextAlignmentCenter;
 	} else if ([self.type isEqualToString:kIASKPSMultiValueSpecifier] || [self.type isEqualToString:kIASKPSTitleValueSpecifier]) {
-		return UITextAlignmentRight;
+		return NSTextAlignmentRight;
 	}
-	return UITextAlignmentLeft;
+	return NSTextAlignmentLeft;
 }
 @end
