@@ -512,6 +512,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 		textField.text = textValue;
 		textField.key = specifier.key;
 		textField.delegate = self;
+        textField.maxLength = specifier.maximumValue;
 		textField.secureTextEntry = [specifier isSecure];
 		textField.keyboardType = specifier.keyboardType;
 		textField.autocapitalizationType = specifier.autocapitalizationType;
@@ -752,6 +753,19 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 #pragma mark -
 #pragma mark UITextFieldDelegate Functions
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    NSString* proposedNewString = [[textField text] stringByReplacingCharactersInRange:range withString:string];
+    NSInteger maxLength = [(IASKTextField *)textField maxLength];
+    
+    if (maxLength > 0 && proposedNewString.length > maxLength)
+    {
+        return NO;
+    }
+        
+    return YES;
+}
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
 	self.currentFirstResponder = textField;

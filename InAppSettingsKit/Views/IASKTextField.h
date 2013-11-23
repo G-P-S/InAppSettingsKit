@@ -20,5 +20,6 @@
 @interface IASKTextField : UITextField
 
 @property (nonatomic, copy) NSString *key;
+@property (nonatomic, assign) NSInteger maxLength;
 
 @end
